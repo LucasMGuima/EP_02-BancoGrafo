@@ -2,6 +2,24 @@ from utils.pokemonDB import PokemonDB
 from utils.pokemon import Pokemon
 import pandas as pd
 
+lst_pokemons_branched_evo = [
+    "Oddish",
+    "Poliwag",
+    "Slowpoke",
+    "Scyther",
+    "Eevee",
+    "Tyrogue",
+    "Wumple",
+    "Ralts",
+    "Nicada",
+    "Snorunt",
+    "Clamperl",
+    "Burmy",
+    "Cosmog",
+    "Applin",
+    "Charcadet"  
+]
+
 def get_abilidades(row: pd.Series) -> list[str]:
     abilidade:list = []
     for i in range(6):
@@ -14,7 +32,8 @@ def get_abilidades(row: pd.Series) -> list[str]:
 
 def get_evolutions(row: pd.Series) -> list[int]:
     evolucao:list = []
-    for i in range(6):
+
+    for i in range(9):
         row_name = f"evolucao {i+1}"
         if pd.isna(row[row_name]) == True:
             break
@@ -39,13 +58,15 @@ if __name__ == '__main__':
     pokedex = PokemonDB("neo4j+s://aa38a78e.databases.neo4j.io", "neo4j", "1camhqRZcZMChJnQG6Y8x5zU1dID5yFbjjEWOXXrLkQ")
     pokemons = pd.read_csv('./dados/pokemons.csv')
 
-    for i, pokemon in pokemons.iterrows():
-        # Adiciona os pokemons ao banco, criar um nó para cada pokemon
-        # criar_pokemons(i, pokemon)
+    print(pokemons.loc[pd.isna(pokemons['evolucao 4']) == False])
 
-        # Vaz a relação de evolução entre os pokemons
-        print(get_evolutions(pokemon))
-        break
+    # for i, pokemon in pokemons.iterrows():
+    #     # Adiciona os pokemons ao banco, criar um nó para cada pokemon
+    #     # criar_pokemons(i, pokemon)
+
+    #     # Vaz a relação de evolução entre os pokemons
+    #     print(get_evolutions(pokemon))
+    #     break
         
 
 

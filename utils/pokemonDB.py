@@ -23,6 +23,9 @@ class PokemonDB:
         dados_pokemon = "{{{{id:{id}, name:'{name}', peso:{peso}, altura:{altura}, tipo1:'{tipo1}', tipo2:'{tipo2}', abilidade:{abilidade}}}}}".format(name=pokemon.name.replace('\'', '_'), id=pokemon.id, peso=pokemon.peso, altura=pokemon.altura, tipo1=pokemon.tipo1, tipo2=pokemon.tipo2, abilidade=pokemon.abilidade)
         dados_pokemon = dados_pokemon[1:-1]
         query:str = f"CREATE (`{pokemon.name}`:POKEMON {dados_pokemon})"
-        print(query)
-        result = tx.run(query)
-        return result
+        tx.run(query)
+    
+    @staticmethod
+    def _create_evolution(tx, pokemom: Pokemon, evolucao: Pokemon):
+        query:str = f"CREATE (`{pokemom.name}`-[:EVOLUCAO]->(`{evolucao.name}`))"
+        tx.run(query)
