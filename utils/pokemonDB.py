@@ -12,6 +12,11 @@ class PokemonDB:
         with self.driver.session() as session:
             resp = session.execute_write(self._create_pokemon, pokemon)
             print(resp)
+    
+    def insert_evolution(self, pokemon: Pokemon, evo_to: Pokemon):
+        with self.driver.session() as session:
+            resp = session.execute_write(self._create_evolution, pokemon, evo_to)
+            print(resp)
 
     def consultar(self, query:str):
         with self.driver.session() as session:

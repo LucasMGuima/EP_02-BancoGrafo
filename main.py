@@ -3,21 +3,22 @@ from utils.pokemon import Pokemon
 import pandas as pd
 
 lst_pokemons_branched_evo = [
-    "Oddish",
-    "Poliwag",
+    "Gloom",
+    "Poliwhirl",
     "Slowpoke",
     "Scyther",
     "Eevee",
     "Tyrogue",
     "Wumple",
-    "Ralts",
+    "Kirila",
     "Nicada",
     "Snorunt",
     "Clamperl",
     "Burmy",
-    "Cosmog",
+    "Cosmoem",
     "Applin",
-    "Charcadet"  
+    "Charcadet",
+    "Mime Jr."
 ]
 
 def get_abilidades(row: pd.Series) -> list[str]:
@@ -30,8 +31,10 @@ def get_abilidades(row: pd.Series) -> list[str]:
             abilidade.append(row[row_name])
     return abilidade 
 
-def get_evolutions(row: pd.Series) -> list[int]:
+def get_evolutions(row: pd.Series) -> list[str]:
     evolucao:list = []
+
+    if(row['pokemon_name'] in lst_pokemons_branched_evo): return
 
     for i in range(9):
         row_name = f"evolucao {i+1}"
@@ -39,7 +42,14 @@ def get_evolutions(row: pd.Series) -> list[int]:
             break
         else:
             evo_id = int(str(row[row_name]).split('-')[0].replace('#',''))
-            if evo_id != row['pokemon_id']: evolucao.append(evo_id) 
+            evo_name = str(row[row_name]).split('-')[1]
+            if (evo_name in lst_pokemons_branched_evo): 
+                # Branched Evo
+                return
+            if (evo_id == int(row['pokemon_id'])+1): return (evo_name)
+            if (pd.isna(row["evolucao 3"]) == True):
+                # So tem uma evolucao
+                if evo_name != row['pokemon_name']: return evo_name
     return evolucao 
 
 def criar_pokemons(i:int, pokemon: pd.Series):
@@ -58,15 +68,12 @@ if __name__ == '__main__':
     pokedex = PokemonDB("neo4j+s://aa38a78e.databases.neo4j.io", "neo4j", "1camhqRZcZMChJnQG6Y8x5zU1dID5yFbjjEWOXXrLkQ")
     pokemons = pd.read_csv('./dados/pokemons.csv')
 
-    print(pokemons.loc[pd.isna(pokemons['evolucao 4']) == False])
+    for i, pokemon in pokemons.iterrows():
+        # Adiciona os pokemons ao banco, criar um nó para cada pokemon
+        # criar_pokemons(i, pokemon)
 
-    # for i, pokemon in pokemons.iterrows():
-    #     # Adiciona os pokemons ao banco, criar um nó para cada pokemon
-    #     # criar_pokemons(i, pokemon)
-
-    #     # Vaz a relação de evolução entre os pokemons
-    #     print(get_evolutions(pokemon))
-    #     break
+        # Vaz a relação de evolução entre os pokemons
+        print(pokemon['pokemon_name'], " -> ",get_evolutions(pokemon))
         
 
 
