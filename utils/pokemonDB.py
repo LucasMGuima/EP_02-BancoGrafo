@@ -13,7 +13,8 @@ class PokemonDB:
             resp = session.execute_write(self._create_pokemon, pokemon)
             print(resp)
     
-    def insert_evolution(self, pokemon: Pokemon, evo_to: Pokemon):
+    def insert_evolution(self, pokemon: str, evo_to: str):
+        if not evo_to: return
         with self.driver.session() as session:
             resp = session.execute_write(self._create_evolution, pokemon, evo_to)
             print(resp)
@@ -27,10 +28,10 @@ class PokemonDB:
     def _create_pokemon(tx, pokemon: Pokemon):
         dados_pokemon = "{{{{id:{id}, name:'{name}', peso:{peso}, altura:{altura}, tipo1:'{tipo1}', tipo2:'{tipo2}', abilidade:{abilidade}}}}}".format(name=pokemon.name.replace('\'', '_'), id=pokemon.id, peso=pokemon.peso, altura=pokemon.altura, tipo1=pokemon.tipo1, tipo2=pokemon.tipo2, abilidade=pokemon.abilidade)
         dados_pokemon = dados_pokemon[1:-1]
-        query:str = f"CREATE (`{pokemon.name}`:POKEMON {dados_pokemon})"
+        query:str = f"CREATE (id{pokemon.id}:POKEMON {dados_pokemon})"
         tx.run(query)
     
     @staticmethod
-    def _create_evolution(tx, pokemom: Pokemon, evolucao: Pokemon):
-        query:str = f"CREATE (`{pokemom.name}`-[:EVOLUCAO]->(`{evolucao.name}`))"
+    def _create_evolution(tx, pokemom: str, evolucao: str):
+        query:str = "MATCH (p:POKEMON {op}id:{pokemon}{ed}), (e:POKEMON {op}id:{evolucao}{ed}) CREATE (p)-[:EVOLUCAO]->(e)".format(pokemon=pokemom, evolucao=evolucao, op="{", ed="}")
         tx.run(query)

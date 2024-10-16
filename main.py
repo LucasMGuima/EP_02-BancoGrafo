@@ -31,7 +31,7 @@ def get_abilidades(row: pd.Series) -> list[str]:
             abilidade.append(row[row_name])
     return abilidade 
 
-def get_evolutions(row: pd.Series) -> list[str]:
+def get_evolutions(row: pd.Series) -> list[int]:
     evolucao:list = []
 
     if(row['pokemon_name'] in lst_pokemons_branched_evo): return
@@ -45,15 +45,31 @@ def get_evolutions(row: pd.Series) -> list[str]:
             evo_name = str(row[row_name]).split('-')[1]
             if (evo_name in lst_pokemons_branched_evo): 
                 # Branched Evo
-                return
-            if (evo_id == int(row['pokemon_id'])+1): return (evo_name)
+                if int(row['pokemon_id']) < evo_id: return evo_id
+                if int(row["pokemon_id"] == 44): return (45, 182)
+                if int(row['pokemon_id'] == 61): return (62, 186)
+                if int(row['pokemon_id'] == 79): return (80, 199)
+                if int(row['pokemon_id'] == 123): return (212, 900)
+                if int(row['pokemon_id'] == 133): return (134, 135, 136, 196, 197, 470, 471, 700)
+                if int(row["pokemon_id"] == 236): return (106, 107, 237)
+                if int(row['pokemon_id'] == 256): return (266, 268)
+                if int(row['pokemon_id'] == 281): return (282, 475)
+                if int(row['pokemon_id'] == 290): return (291, 292)
+                if int(row['pokemon_id'] == 361): return (362, 478)
+                if int(row["pokemon_id"] == 366): return (367, 368)
+                if int(row['pokemon_id'] == 412): return (414, 413)
+                if int(row["pokemon_id"] == 790): return (791, 792)
+                if int(row['pokemon_id'] == 840): return (841, 842, 1011)
+                if int(row["pokemon_id"] == 935): return (936, 937)
+                else: return
+            if (evo_id == int(row['pokemon_id'])+1): return evo_id
             if (pd.isna(row["evolucao 3"]) == True):
                 # So tem uma evolucao
-                if evo_name != row['pokemon_name']: return evo_name
-    return evolucao 
+                if evo_name != row['pokemon_name']: return evo_id
+    return evolucao
 
 def criar_pokemons(i:int, pokemon: pd.Series):
-    id:int = i+1
+    id:int = int(pokemon['pokemon_id'])
     name:str = pokemon['pokemon_name']
     peso:float = float(str(pokemon['peso']).split('k')[0].lstrip())
     altura:float = float(str(pokemon['altura']).split('m')[0].lstrip())
@@ -70,13 +86,17 @@ if __name__ == '__main__':
 
     for i, pokemon in pokemons.iterrows():
         # Adiciona os pokemons ao banco, criar um nó para cada pokemon
-        # criar_pokemons(i, pokemon)
-
-        # Vaz a relação de evolução entre os pokemons
-        print(pokemon['pokemon_name'], " -> ",get_evolutions(pokemon))
+        criar_pokemons(i, pokemon)
         
+    for i, pokemon in pokemons.iterrows():
+        # Vaz a relação de evolução entre os pokemons
+        lst_evo = get_evolutions(pokemon)
+        if(type(lst_evo) == list): 
+            for evo in lst_evo:
+                pokedex.insert_evolution(pokemon['pokemon_id'], evo)
+        else:
+            pokedex.insert_evolution(pokemon['pokemon_id'], lst_evo)
 
+    # print(pokedex.consultar("MATCH (b:POKEMON)-[:EVOLUCAO]->(:POKEMON) RETURN b.name;"))
 
-    # resp = pokedex.consultar("MATCH (pokemon:POKEMON {id:1}) RETURN pokemon.name")
-    # print(resp)
     pokedex.close()
