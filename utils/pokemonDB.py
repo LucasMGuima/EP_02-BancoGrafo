@@ -33,5 +33,5 @@ class PokemonDB:
     
     @staticmethod
     def _create_evolution(tx, pokemom: str, evolucao: str):
-        query:str = "MATCH (p:POKEMON {op}id:{pokemon}{ed}), (e:POKEMON {op}id:{evolucao}{ed}) CREATE (p)-[:EVOLUCAO]->(e)".format(pokemon=pokemom, evolucao=evolucao, op="{", ed="}")
+        query:str = "MATCH (p:POKEMON {op}id:{pokemon}{ed}), (e:POKEMON {op}id:{evolucao}{ed}) CREATE (p)-[_{pokemon}to_{evolucao}:EVOLUCAO]->(e)".format(pokemon=pokemom, evolucao=evolucao, op="{", ed="}")
         tx.run(query)
