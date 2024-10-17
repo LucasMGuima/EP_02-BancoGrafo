@@ -88,7 +88,6 @@ if __name__ == '__main__':
     for i, pokemon in pokemons.iterrows():
         # Vaz a relação de evolução entre os pokemons
         lst_evo = get_evolutions(pokemon)
-        print(type(lst_evo), lst_evo)
         if(type(lst_evo) is list):
             for evo in lst_evo:
                 pokedex.insert_evolution(pokemon['pokemon_id'], evo)
